@@ -1,6 +1,6 @@
 import funcoes as f
 
-file_path = 'exemplo1.txt'
+file_path = './tests/exemplo1.txt'
 arquivo_conteudo = []
 pilha = []
 tabela_simbolos = {}
@@ -20,7 +20,6 @@ for elemento in arquivo_conteudo:
         if len(partes) > 1:
             nome_bloco = "_" + partes[1]
             pilha.append(nome_bloco)
-            print(f"INICIO DO BLOCO: {nome_bloco}")
             tabela_simbolos = {}
             pilha.append(tabela_simbolos)
 
@@ -30,18 +29,15 @@ for elemento in arquivo_conteudo:
             nome_bloco = "_" + partes[1]
             while nome_bloco in pilha:
                 pilha.pop()
-            if nome_bloco in pilha:
-                print(f"FIM DO BLOCO: {nome_bloco}")
 
     elif elemento.startswith("PRINT"):
         var_nome = elemento[5:]  # Pega todos os caracteres após o quinto
         # Verifica se a variável existe na tabela de símbolos
-        for tabela_simbolos in reversed(pilha):
-            if var_nome in tabela_simbolos:
-                print(tabela_simbolos[var_nome]['valor'])
-                break
-            else:
-                print(f"Erro: Variável {var_nome} não definida neste escopo.")
+        var_valor = f.procurar_valor_variavel_em_escopos(pilha, var_nome)
+        if var_valor:
+            print(var_valor)
+        else:
+            print(f"Erro: Variável {var_nome} não definida neste escopo.")
 
     elif elemento.startswith("NUMERO"):
         if "=" not in elemento:
@@ -55,14 +51,12 @@ for elemento in arquivo_conteudo:
                         var_nome, var_valor = parte.split('=')
                         f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
                         f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
-                    """ else:
-                        print(f"Erro: Formato inválido para declaração de variável: {parte}") """
             else:
                 partes = elemento[6:].split('=')
                 var_nome = partes[0].strip()
                 var_valor = partes[1].strip()
-
-            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
+                f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
         
     elif elemento.startswith("CADEIA"):
         if "=" not in elemento:

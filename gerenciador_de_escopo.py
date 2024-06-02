@@ -9,7 +9,6 @@ with open(file_path, 'r') as arquivo:
     linhas = arquivo.readlines()
     for linha in linhas:
         linha = linha.strip()
-        # Ignora linhas vazias
         if linha:
             linha = ''.join(linha.split())
             arquivo_conteudo.append(linha)
@@ -30,8 +29,7 @@ for elemento in arquivo_conteudo:
         if len(partes) > 1:
             nome_bloco = "_" + partes[1]
             while nome_bloco in pilha:
-                a = pilha.pop()
-                print(f"ITEM EXCLUIDO: {a}")
+                pilha.pop()
             if nome_bloco in pilha:
                 print(f"FIM DO BLOCO: {nome_bloco}")
 
@@ -40,8 +38,8 @@ for elemento in arquivo_conteudo:
         # Verifica se a variável existe na tabela de símbolos
         for tabela_simbolos in reversed(pilha):
             if var_nome in tabela_simbolos:
-                print(tabela_simbolos[var_nome]["valor"])
-                #break
+                print(tabela_simbolos[var_nome]['valor'])
+                break
             else:
                 print(f"Erro: Variável {var_nome} não definida neste escopo.")
 
@@ -56,15 +54,15 @@ for elemento in arquivo_conteudo:
                     if '=' in parte:
                         var_nome, var_valor = parte.split('=')
                         f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
-                        f.verificar_atribuicao(tabela_simbolos, var_nome, var_valor)
-                    else:
-                        print(f"Erro: Formato inválido para declaração de variável: {parte}")
+                        f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                    """ else:
+                        print(f"Erro: Formato inválido para declaração de variável: {parte}") """
             else:
                 partes = elemento[6:].split('=')
                 var_nome = partes[0].strip()
                 var_valor = partes[1].strip()
 
-            f.verificar_atribuicao(tabela_simbolos, var_nome, var_valor)
+            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
         
     elif elemento.startswith("CADEIA"):
         if "=" not in elemento:
@@ -77,26 +75,22 @@ for elemento in arquivo_conteudo:
                     if '=' in parte:
                         var_nome, var_valor = parte.split('=')
                         f.armazenar_variavel(tabela_simbolos, var_nome, "CADEIA")
-                        f.verificar_atribuicao(tabela_simbolos, var_nome, var_valor)
+                        f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
                     else:
                         print(f"Erro: Formato inválido para declaração de variável: {parte}")
             else:
                 partes = elemento[6:].split('=')
                 var_nome = partes[0].strip()
                 var_valor = partes[1].strip()
-
-            f.verificar_atribuicao(tabela_simbolos, var_nome, var_valor)
-
-    elif "=" in elemento:  # Atualiza o valor da variável
-        partes = elemento.split('=')
+                f.armazenar_variavel(tabela_simbolos, var_nome, "CADEIA")
+                f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+    
+    # Verifica se é uma atribuição
+    elif "=" in elemento: 
         var_nome, var_valor = elemento.split('=', 1)
-        if f.verificar_existencia(tabela_simbolos, var_nome):
-            var_tipo = f.verificar_tipo(tabela_simbolos, var_nome)
-
-
-
-
-
-        var_valor = var_valor.replace('"', '').strip()
-        if var_nome in tabela_simbolos:
-            tabela_simbolos[var_nome]["valor"] = var_valor
+        if f.verificar_tipo_variavel(tabela_simbolos, var_nome) == "CADEIA" and var_valor.startswith('"') and var_valor.endswith('"'):
+            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+        elif f.verificar_tipo_variavel(tabela_simbolos, var_nome) == "NUMERO" and f.is_number(var_valor):
+            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+        else:
+            f.atribuir_valor_entre_variaveis(tabela_simbolos, var_nome, var_valor)

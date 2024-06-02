@@ -1,21 +1,17 @@
+from menu import menu
 import funcoes as f
 
-file_path = './tests/exemplo1.txt'
+diretorio = './tests/'
+arquivo_caminho = menu(diretorio)
+
 arquivo_conteudo = []
 pilha = []
 tabela_simbolos = {}
-        
-with open(file_path, 'r') as arquivo:
-    linhas = arquivo.readlines()
-    for linha in linhas:
-        linha = linha.strip()
-        if linha:
-            linha = ''.join(linha.split())
-            arquivo_conteudo.append(linha)
+
+arquivo_conteudo = f.guardar_arquivo(arquivo_caminho, arquivo_conteudo)
 
 for elemento in arquivo_conteudo:
     if elemento.startswith("BLOCO"):
-        # Extrai o nome do bloco
         partes = elemento.split("_", 1)
         if len(partes) > 1:
             nome_bloco = "_" + partes[1]
@@ -29,62 +25,68 @@ for elemento in arquivo_conteudo:
             nome_bloco = "_" + partes[1]
             while nome_bloco in pilha:
                 pilha.pop()
-
-    elif elemento.startswith("PRINT"):
-        var_nome = elemento[5:]  # Pega todos os caracteres após o quinto
-        # Verifica se a variável existe na tabela de símbolos
-        var_valor = f.procurar_valor_variavel_em_escopos(pilha, var_nome)
-        if var_valor:
-            print(var_valor)
-        else:
-            print(f"Erro: Variável {var_nome} não definida neste escopo.")
-
+    
     elif elemento.startswith("NUMERO"):
         if "=" not in elemento:
             var_nome = elemento[6:]
-            f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
+            f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
         else:
             if "," in elemento:
                 partes = elemento[6:].split(',')
                 for parte in partes:
-                    if '=' in parte:
+                    if "=" in parte:
                         var_nome, var_valor = parte.split('=')
-                        f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
+                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
                         f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                    else:
+                        var_nome = parte
+                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
             else:
-                partes = elemento[6:].split('=')
-                var_nome = partes[0].strip()
-                var_valor = partes[1].strip()
-                f.armazenar_variavel(tabela_simbolos, var_nome, "NUMERO")
+                var_nome, var_valor = elemento[6:].split('=', 1)
+                f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
                 f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
-        
+    
     elif elemento.startswith("CADEIA"):
         if "=" not in elemento:
             var_nome = elemento[6:]
-            f.armazenar_variavel(tabela_simbolos, var_nome, "CADEIA")
+            f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
         else:
             if "," in elemento:
                 partes = elemento[6:].split(',')
                 for parte in partes:
-                    if '=' in parte:
+                    if "=" in parte:
                         var_nome, var_valor = parte.split('=')
-                        f.armazenar_variavel(tabela_simbolos, var_nome, "CADEIA")
+                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
                         f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
-                    else:
-                        print(f"Erro: Formato inválido para declaração de variável: {parte}")
             else:
-                partes = elemento[6:].split('=')
-                var_nome = partes[0].strip()
-                var_valor = partes[1].strip()
-                f.armazenar_variavel(tabela_simbolos, var_nome, "CADEIA")
+                var_nome, var_valor = elemento[6:].split('=', 1)
+                f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
                 f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
     
-    # Verifica se é uma atribuição
-    elif "=" in elemento: 
-        var_nome, var_valor = elemento.split('=', 1)
-        if f.verificar_tipo_variavel(tabela_simbolos, var_nome) == "CADEIA" and var_valor.startswith('"') and var_valor.endswith('"'):
-            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
-        elif f.verificar_tipo_variavel(tabela_simbolos, var_nome) == "NUMERO" and f.is_number(var_valor):
-            f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+    elif elemento.startswith("PRINT"):
+        var_nome = elemento[5:]
+        if f.procurar_variavel_em_pilha(pilha, var_nome):
+            var_valor = f.procurar_valor_variavel_em_pilha(pilha, var_nome)
+            if var_valor or var_valor == 0:
+                print(var_valor)
         else:
-            f.atribuir_valor_entre_variaveis(tabela_simbolos, var_nome, var_valor)
+            print(f"ERRO: Variavel {var_nome} nao declarada")
+
+    elif "=" in elemento:
+        var_destino, var_origem = elemento.split('=')
+        if f.procurar_variavel_em_pilha(pilha, var_destino):
+            if f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "CADEIA" and var_origem.startswith('"') and var_origem.endswith('"'):
+                f.declarar_variavel_tabela(tabela_simbolos, var_destino, "CADEIA")
+                f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+            elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "NUMERO" and f.e_numero(var_origem):
+                f.declarar_variavel_tabela(tabela_simbolos, var_destino, "NUMERO")
+                f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+            else:
+                if f.procurar_variavel_em_pilha(pilha, var_origem):
+                    tipo_var_origem = f.procurar_tipo_variavel_em_pilha(pilha, var_origem)
+                    tipo_var_destino = f.procurar_tipo_variavel_em_pilha(pilha, var_destino)
+                    if tipo_var_origem == tipo_var_destino:
+                        valor_var_origem = f.procurar_valor_variavel_em_pilha(pilha, var_origem)
+                        f.atribuir_valor_variavel(tabela_simbolos, var_destino, valor_var_origem)
+                    else:
+                        print(f"ERRO: Tipos incompatíveis - {tipo_var_origem} e {tipo_var_destino}")

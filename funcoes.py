@@ -34,6 +34,12 @@ def verificar_existencia_variavel(tabela_simbolos, var):
         print(f"ERRO: Variável não declarada - {var}")
         return False
     
+def procurar_valor_variavel_em_escopos(tabela_simbolos, var_nome):
+    for escopo in reversed(tabela_simbolos):
+        if var_nome in escopo:
+            return escopo[var_nome]['valor']
+    return None
+    
 def is_number(s):
     try:
         float(s)

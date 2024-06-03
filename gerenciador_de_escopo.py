@@ -69,8 +69,6 @@ for elemento in arquivo_conteudo:
             var_valor = f.procurar_valor_variavel_em_pilha(pilha, var_nome)
             if var_valor or var_valor == 0:
                 print(var_valor)
-        else:
-            print(f"ERRO: Variavel {var_nome} nao declarada")
 
     elif "=" in elemento:
         var_destino, var_origem = elemento.split('=')
@@ -78,9 +76,13 @@ for elemento in arquivo_conteudo:
             if f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "CADEIA" and var_origem.startswith('"') and var_origem.endswith('"'):
                 f.declarar_variavel_tabela(tabela_simbolos, var_destino, "CADEIA")
                 f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+            elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "NUMERO" and var_origem.startswith('"') and var_origem.endswith('"'):
+                print(f"ERRO: Tipos não compatíveis")
             elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "NUMERO" and f.e_numero(var_origem):
                 f.declarar_variavel_tabela(tabela_simbolos, var_destino, "NUMERO")
                 f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+            elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "CADEIA" and f.e_numero(var_origem):
+                print(f"ERRO: Tipos não compatíveis")
             else:
                 if f.procurar_variavel_em_pilha(pilha, var_origem):
                     tipo_var_origem = f.procurar_tipo_variavel_em_pilha(pilha, var_origem)
@@ -89,4 +91,4 @@ for elemento in arquivo_conteudo:
                         valor_var_origem = f.procurar_valor_variavel_em_pilha(pilha, var_origem)
                         f.atribuir_valor_variavel(tabela_simbolos, var_destino, valor_var_origem)
                     else:
-                        print(f"ERRO: Tipos incompatíveis - {tipo_var_origem} e {tipo_var_destino}")
+                        print(f"ERRO: Tipos não compatíveis")

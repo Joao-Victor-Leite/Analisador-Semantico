@@ -1,3 +1,5 @@
+import re
+
 def guardar_arquivo(arquivo_caminho, arquivo_conteudo):
     """
     Função que lê um arquivo e guarda seu conteúdo em uma lista.
@@ -18,7 +20,8 @@ def guardar_arquivo(arquivo_caminho, arquivo_conteudo):
         for linha in linhas:
             linha = linha.strip()
             if linha:
-                linha = ''.join(linha.split())
+                segmentos = re.split(r'("[^"]*")', linha)
+                linha = ''.join(segmento if segmento.startswith('"') else segmento.replace(' ', '') for segmento in segmentos)
                 arquivo_conteudo.append(linha)
     return arquivo_conteudo
 

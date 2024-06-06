@@ -22,7 +22,7 @@ def guardar_arquivo(arquivo_caminho, arquivo_conteudo):
                 arquivo_conteudo.append(linha)
     return arquivo_conteudo
 
-def declarar_variavel_tabela(tabela_simbolos, var_nome, var_tipo, var_valor=0):
+def declarar_variavel_tabela(tabela_simbolos, token_tipo, var_nome, var_tipo, var_valor=0):
     """
     Função responsável por declarar uma variável na tabela de símbolos.
 
@@ -30,15 +30,16 @@ def declarar_variavel_tabela(tabela_simbolos, var_nome, var_tipo, var_valor=0):
         tabela_simbolos (dict): Dicionário que representa a tabela de símbolos.
         var_nome (str): Nome da variável a ser declarada.
         var_tipo (str): Tipo da variável a ser declarada.
+        token_tipo (str): Tipo do token da variável a ser declarada.
         var_valor (int, opcional): Valor inicial da variável. O valor padrão é 0.
 
     Retorno:
         Nenhum
 
     Exemplo de uso:
-    declarar_variavel_tabela(tabela_simbolos, "x", "int", 10)
+    declarar_variavel_tabela(tabela_simbolos, "x", "int", "NUMERO", 10)
     """
-    tabela_simbolos[var_nome] = {"tipo": var_tipo, "valor": var_valor}
+    tabela_simbolos[var_nome] = {"token_tipo": token_tipo, "tipo": var_tipo, "valor": var_valor}
 
 def atribuir_valor_variavel(pilha, var_nome, var_valor):
     """

@@ -29,41 +29,41 @@ for elemento in arquivo_conteudo:
     elif elemento.startswith("NUMERO"):
         if "=" not in elemento:
             var_nome = elemento[6:]
-            f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
+            f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "NUMERO")
         else:
             if "," in elemento:
                 partes = elemento[6:].split(',')
                 for parte in partes:
                     if "=" in parte:
                         var_nome, var_valor = parte.split('=')
-                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
+                        f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "NUMERO")
                         f.atribuir_valor_variavel(pilha, var_nome, var_valor)
                     else:
                         var_nome = parte
-                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
+                        f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "NUMERO")
             else:
                 var_nome, var_valor = elemento[6:].split('=', 1)
-                f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
+                f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "NUMERO")
                 f.atribuir_valor_variavel(pilha, var_nome, var_valor)
     
     elif elemento.startswith("CADEIA"):
         if "=" not in elemento:
             var_nome = elemento[6:]
-            f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
+            f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador",var_nome, "CADEIA")
         else:
             if "," in elemento:
                 partes = elemento[6:].split(',')
                 for parte in partes:
                     if "=" in parte:
                         var_nome, var_valor = parte.split('=')
-                        f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
+                        f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "CADEIA")
                         f.atribuir_valor_variavel(pilha, var_nome, var_valor)
             else:
                 var_nome, var_valor = elemento[6:].split('=', 1)
-                f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
+                f.declarar_variavel_tabela(tabela_simbolos, "TK_identificador", var_nome, "CADEIA")
                 f.atribuir_valor_variavel(pilha, var_nome, var_valor)
     
-    elif elemento.startswith("PRINT"):
+    elif elemento.startswith("PRINT") or elemento.startswith("print"):
         var_nome = elemento[5:]
         if f.procurar_variavel_em_pilha(pilha, var_nome):
             var_valor = f.procurar_valor_variavel_em_pilha(pilha, var_nome)

@@ -40,19 +40,22 @@ def declarar_variavel_tabela(tabela_simbolos, var_nome, var_tipo, var_valor=0):
     """
     tabela_simbolos[var_nome] = {"tipo": var_tipo, "valor": var_valor}
 
-def atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor):
+def atribuir_valor_variavel(pilha, var_nome, var_valor):
     """
-    Atribui um valor a uma variável na tabela de símbolos.
+    Atribui um valor a uma variável na pilha de escopos.
 
     Args:
-        tabela_simbolos (dict): A tabela de símbolos contendo as variáveis.
+        pilha (list): A pilha de escopos contendo as tabelas de símbolos.
         var_nome (str): O nome da variável.
         var_valor (any): O valor a ser atribuído à variável.
 
     Retorno:
         Nenhum
     """
-    tabela_simbolos[var_nome]["valor"] = var_valor
+    for escopo in reversed(pilha):
+        if isinstance(escopo, dict) and var_nome in escopo:
+            escopo[var_nome]["valor"] = var_valor
+            break
 
 def procurar_variavel_em_pilha(pilha, var_nome):
     """

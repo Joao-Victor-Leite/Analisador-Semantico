@@ -37,14 +37,14 @@ for elemento in arquivo_conteudo:
                     if "=" in parte:
                         var_nome, var_valor = parte.split('=')
                         f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
-                        f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                        f.atribuir_valor_variavel(pilha, var_nome, var_valor)
                     else:
                         var_nome = parte
                         f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
             else:
                 var_nome, var_valor = elemento[6:].split('=', 1)
                 f.declarar_variavel_tabela(tabela_simbolos, var_nome, "NUMERO")
-                f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                f.atribuir_valor_variavel(pilha, var_nome, var_valor)
     
     elif elemento.startswith("CADEIA"):
         if "=" not in elemento:
@@ -57,11 +57,11 @@ for elemento in arquivo_conteudo:
                     if "=" in parte:
                         var_nome, var_valor = parte.split('=')
                         f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
-                        f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                        f.atribuir_valor_variavel(pilha, var_nome, var_valor)
             else:
                 var_nome, var_valor = elemento[6:].split('=', 1)
                 f.declarar_variavel_tabela(tabela_simbolos, var_nome, "CADEIA")
-                f.atribuir_valor_variavel(tabela_simbolos, var_nome, var_valor)
+                f.atribuir_valor_variavel(pilha, var_nome, var_valor)
     
     elif elemento.startswith("PRINT"):
         var_nome = elemento[5:]
@@ -72,23 +72,26 @@ for elemento in arquivo_conteudo:
 
     elif "=" in elemento:
         var_destino, var_origem = elemento.split('=')
+        # verifica se a variavel de destino existe
         if f.procurar_variavel_em_pilha(pilha, var_destino):
+            # verifica se a variavel de destino é do tipo CADEIA e se a origem é uma string
             if f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "CADEIA" and var_origem.startswith('"') and var_origem.endswith('"'):
-                f.declarar_variavel_tabela(tabela_simbolos, var_destino, "CADEIA")
-                f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+                f.atribuir_valor_variavel(pilha, var_destino, var_origem)
             elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "NUMERO" and var_origem.startswith('"') and var_origem.endswith('"'):
                 print(f"ERRO: Tipos não compatíveis")
+            # verifica se a variavel de destino é do tipo NUMERO e se a origem é um número
             elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "NUMERO" and f.e_numero(var_origem):
-                f.declarar_variavel_tabela(tabela_simbolos, var_destino, "NUMERO")
-                f.atribuir_valor_variavel(tabela_simbolos, var_destino, var_origem)
+                f.atribuir_valor_variavel(pilha, var_destino, var_origem)
             elif f.procurar_tipo_variavel_em_pilha(pilha, var_destino) == "CADEIA" and f.e_numero(var_origem):
                 print(f"ERRO: Tipos não compatíveis")
+            # verifica se as duas variáveis são do mesmo tipo
             else:
                 if f.procurar_variavel_em_pilha(pilha, var_origem):
                     tipo_var_origem = f.procurar_tipo_variavel_em_pilha(pilha, var_origem)
                     tipo_var_destino = f.procurar_tipo_variavel_em_pilha(pilha, var_destino)
                     if tipo_var_origem == tipo_var_destino:
                         valor_var_origem = f.procurar_valor_variavel_em_pilha(pilha, var_origem)
-                        f.atribuir_valor_variavel(tabela_simbolos, var_destino, valor_var_origem)
+                        f.atribuir_valor_variavel(pilha, var_destino, valor_var_origem)
                     else:
                         print(f"ERRO: Tipos não compatíveis")
+        
